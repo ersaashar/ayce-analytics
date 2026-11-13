@@ -1,0 +1,59 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in · AYCE Analytics V2</title>
+    <link rel="stylesheet" href="{% static 'chat/dist/chat.css' %}?v=management-1">
+  </head>
+  <body class="auth-page">
+    <main class="auth-card">
+      <p class="auth-brand">AYCE Analytics V2</p>
+      <h1 class="auth-title">Sign in</h1>
+      <p class="auth-intro">Use the account your administrator provided.</p>
+
+      {% if form.non_field_errors %}
+        <p class="form-error" role="alert">
+          {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+        </p>
+      {% endif %}
+
+      <form class="auth-form" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ next }}">
+        <label class="field">
+          <span class="field-label">Username</span>
+          <input
+            type="text"
+            name="username"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false"
+            required
+            autofocus
+          >
+          {% for error in form.username.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </label>
+        <label class="field">
+          <span class="field-label">Password</span>
+          <input
+            type="password"
+            name="password"
+            autocomplete="current-password"
+            required
+          >
+          {% for error in form.password.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </label>
+        <button type="submit" class="button primary">Sign in</button>
+      </form>
+
+      <noscript>
+        <p class="hint">Enable JavaScript to use the chat workspace.</p>
+      </noscript>
+    </main>
+  </body>
+</html>

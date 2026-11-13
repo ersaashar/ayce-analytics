@@ -1,0 +1,26 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>{{ section_title }} · AYCE Analytics V2</title>
+    <link rel="stylesheet" href="{% static 'chat/dist/chat.css' %}?v=management-1">
+    <script type="module" src="{% static 'chat/dist/chat.js' %}?v=management-1" defer></script>
+  </head>
+  <body>
+    {% csrf_token %}
+    <p id="bootstrap-error" class="alert" role="alert" hidden></p>
+    <div id="management-root" class="management-shell">
+      <header class="management-header">
+        <p class="sidebar-brand">AYCE Analytics V2</p>
+        <h1 class="management-title">Administration</h1>
+        <p class="hint">Enable JavaScript to manage accounts, departments and datasets.</p>
+      </header>
+      <main class="management-body">
+        <p class="hint">Loading administration…</p>
+      </main>
+    </div>
+    {{ bootstrap|json_script:"management-bootstrap" }}
+  </body>
+</html>

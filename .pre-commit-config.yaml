@@ -1,0 +1,32 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.4
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: django-check
+        name: django system check
+        entry: uv run --locked python scripts/django_check.py
+        language: system
+        pass_filenames: false
+      - id: frontend-check
+        name: frontend lint and typecheck
+        entry: just frontend-check
+        language: system
+        pass_filenames: false
+        files: ^(frontend/.*|package\.json|package-lock\.json|vite\.config\.ts|tsconfig\.json|biome\.json)$

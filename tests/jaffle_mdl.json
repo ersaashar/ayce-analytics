@@ -1,0 +1,45 @@
+{
+  "catalog": "wren",
+  "schema": "public",
+  "models": [
+    {
+      "name": "customers",
+      "tableReference": {"catalog": "jaffle_shop", "schema": "main", "table": "customers"},
+      "primaryKey": "customer_id",
+      "cached": false,
+      "properties": {"description": "One row per customer with basic profile fields plus order-derived facts: first and most recent order date, order count, and lifetime value."},
+      "columns": [
+        {"name": "customer_id", "type": "INT", "isCalculated": false, "notNull": true, "isPrimaryKey": true, "properties": {"description": "Unique identifier for a customer."}},
+        {"name": "first_name", "type": "TEXT", "isCalculated": false, "notNull": true, "properties": {"description": "Customer's first name. PII."}},
+        {"name": "last_name", "type": "TEXT", "isCalculated": false, "notNull": true, "properties": {"description": "Customer's last name. PII."}},
+        {"name": "first_order", "type": "DATE", "isCalculated": false, "notNull": false, "properties": {"description": "Date (UTC) of the customer's first order. NULL when the customer has placed no orders."}},
+        {"name": "most_recent_order", "type": "DATE", "isCalculated": false, "notNull": false, "properties": {"description": "Date (UTC) of the customer's most recent order. NULL when the customer has placed no orders."}},
+        {"name": "number_of_orders", "type": "BIGINT", "isCalculated": false, "notNull": false, "properties": {"description": "Count of orders placed by the customer. NULL, not 0, when the customer has placed no orders."}},
+        {"name": "customer_lifetime_value", "type": "DOUBLE", "isCalculated": false, "notNull": false, "properties": {"description": "Total value (AUD) of all payments across the customer's orders. NULL when the customer has no orders or no payments recorded."}}
+      ]
+    },
+    {
+      "name": "orders",
+      "tableReference": {"catalog": "jaffle_shop", "schema": "main", "table": "orders"},
+      "primaryKey": "order_id",
+      "cached": false,
+      "properties": {"description": "One row per order with the order's status and payment amounts split by payment method, plus the order total."},
+      "columns": [
+        {"name": "order_id", "type": "INT", "isCalculated": false, "notNull": true, "isPrimaryKey": true, "properties": {"description": "Unique identifier for an order."}},
+        {"name": "customer_id", "type": "INT", "isCalculated": false, "notNull": true, "properties": {"description": "Foreign key to customers.customer_id. Every order belongs to an existing customer."}},
+        {"name": "order_date", "type": "DATE", "isCalculated": false, "notNull": true, "properties": {"description": "Date (UTC) that the order was placed."}},
+        {"name": "status", "type": "TEXT", "isCalculated": false, "notNull": true, "properties": {"description": "Order lifecycle status. One of placed (not yet left the warehouse), shipped (in transit to the customer), completed (received by the customer), return_pending (return requested, not yet back at the warehouse), returned (returned and received at the warehouse)."}},
+        {"name": "credit_card_amount", "type": "DOUBLE", "isCalculated": false, "notNull": true, "properties": {"description": "Amount of the order (AUD) paid by credit card. 0 when that method was not used."}},
+        {"name": "coupon_amount", "type": "DOUBLE", "isCalculated": false, "notNull": true, "properties": {"description": "Amount of the order (AUD) paid by coupon. 0 when that method was not used."}},
+        {"name": "bank_transfer_amount", "type": "DOUBLE", "isCalculated": false, "notNull": true, "properties": {"description": "Amount of the order (AUD) paid by bank transfer. 0 when that method was not used."}},
+        {"name": "gift_card_amount", "type": "DOUBLE", "isCalculated": false, "notNull": true, "properties": {"description": "Amount of the order (AUD) paid by gift card. 0 when that method was not used."}},
+        {"name": "amount", "type": "DOUBLE", "isCalculated": false, "notNull": true, "properties": {"description": "Total amount (AUD) of the order. Equals the sum of credit_card_amount, coupon_amount, bank_transfer_amount and gift_card_amount."}}
+      ]
+    }
+  ],
+  "relationships": [{"name": "orders_customers", "models": ["orders", "customers"], "joinType": "MANY_TO_ONE", "condition": "orders.customer_id = customers.customer_id"}],
+  "views": [],
+  "cubes": [],
+  "dataSource": "duckdb",
+  "layoutVersion": 3
+}

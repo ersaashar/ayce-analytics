@@ -1,0 +1,86 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ active_title }} · AYCE Analytics V2</title>
+    <link rel="stylesheet" href="{% static 'chat/dist/chat.css' %}?v=management-1">
+    <script type="module" src="{% static 'chat/dist/chat.js' %}?v=management-1" defer></script>
+  </head>
+  <body>
+    {% csrf_token %}
+    <p id="bootstrap-error" class="alert" role="alert" hidden></p>
+    <div id="chat-root" class="workspace">
+      <aside class="sidebar" aria-label="Chats">
+        <p class="sidebar-brand">AYCE Analytics V2</p>
+        <h2 class="sidebar-heading">Recents</h2>
+        {% if threads %}
+          <ul class="sidebar-list">
+            {% for thread in threads %}
+              <li>
+                <a class="sidebar-link" href="{{ thread.page_url }}"
+                   {% if thread.is_active %}aria-current="page"{% endif %}>
+                  {{ thread.title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="sidebar-empty">No chats yet.</p>
+        {% endif %}
+        <form class="signout" method="post" action="{{ logout_url }}">
+          {% csrf_token %}
+          <button type="submit" class="button secondary">Sign out</button>
+        </form>
+      </aside>
+
+      <main class="main">
+        <header class="main-header">
+          <h1 class="main-title">{{ active_title }}</h1>
+        </header>
+
+        <section class="thread" data-empty="{% if display %}false{% else %}true{% endif %}"
+                 aria-label="Conversation">
+          {% if display %}
+            <div class="thread-viewport">
+              {% for entry in display %}
+                <article class="message" data-role="{{ entry.role }}">
+                  <p class="sr-only">
+                    {% if entry.role == "user" %}You{% else %}Assistant{% endif %}
+                  </p>
+                  <div class="content">
+                    <p class="text">{{ entry.content }}</p>
+                    {% if entry.attachments %}
+                      <ul class="message-files">
+                        {% for attachment in entry.attachments %}
+                          <li class="message-file">
+                            <span class="message-file-name">{{ attachment.name }}</span>
+                            <span class="message-file-size">{{ attachment.size_label }}</span>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="thread-empty">
+              <p class="empty-heading">Where should we begin?</p>
+            </div>
+          {% endif %}
+        </section>
+
+        {% if page_error %}
+          <p class="error" role="alert">{{ page_error }}</p>
+        {% endif %}
+
+        <noscript>
+          <p class="hint">Enable JavaScript to send messages.</p>
+        </noscript>
+      </main>
+    </div>
+
+    {{ bootstrap|json_script:"chat-bootstrap" }}
+  </body>
+</html>
